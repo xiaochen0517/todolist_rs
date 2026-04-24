@@ -1,0 +1,49 @@
+### 正常登录请求 / Valid login request
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 用户名太短 / Username too short
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": "admin123"
+}
+
+### 密码太短 / Password too short
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "1234567"
+}
+
+### 用户名太长 / Username too long
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin_user_too_long_name_here",
+  "password": "admin123"
+}
+
+### 密码太长 / Password too long
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "very_long_password_that_exceeds_limit_here"
+}

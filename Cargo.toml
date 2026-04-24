@@ -1,0 +1,9 @@
+[package]
+name = "todolist_rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rocket = { version = "0.5.1", features = ["serde_json", "json"] }
+rocket-validation = "0.2.0"
+validator = "0.16"
