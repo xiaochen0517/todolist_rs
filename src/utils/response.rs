@@ -1,17 +1,17 @@
+use crate::utils::status::ResponseStatus;
 use rocket::http::Status;
 use rocket::response::Responder;
 use rocket::serde::json::{Json, serde_json};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::{Request, Response};
-use rocket_validation::{CachedValidationErrors, Error};
+use rocket_validation::CachedValidationErrors;
 use std::io::Cursor;
-use std::sync::Mutex;
 use validator::ValidationErrors;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct ApiResponse<T> {
-    pub status: Status,
+    pub status: ResponseStatus,
     pub msg: Option<String>,
     pub data: Option<T>,
 }
@@ -19,13 +19,13 @@ pub struct ApiResponse<T> {
 impl<T: Serialize> ApiResponse<T> {
     pub fn new(data: T) -> ApiResponse<T> {
         ApiResponse {
-            status: Status::Ok,
+            status: ResponseStatus::SUCCESS,
             msg: None,
             data: Some(data),
         }
     }
 
-    pub fn error(status: Status, msg: &str) -> Self {
+    pub fn error(status: ResponseStatus, msg: &str) -> Self {
         ApiResponse {
             status,
             msg: Some(msg.to_string()),
@@ -37,17 +37,17 @@ impl<T: Serialize> ApiResponse<T> {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct ApiError {
-    pub status: Status,
+    pub status: ResponseStatus,
     pub msg: String,
 }
 
 impl ApiError {
-    pub fn new(status: Status, msg: String) -> ApiError {
+    pub fn new(status: ResponseStatus, msg: String) -> ApiError {
         ApiError { status, msg }
     }
 
     pub fn internal_server_error_with_msg(msg: &str) -> ApiError {
-        ApiError::new(Status::InternalServerError, msg.to_string())
+        ApiError::new(ResponseStatus::SERVER_FAILURE, msg.to_string())
     }
 
     pub fn internal_server_error() -> ApiError {
@@ -55,10 +55,10 @@ impl ApiError {
     }
 
     pub fn validation_error(msg: &String) -> ApiError {
-        ApiError::new(Status::BadRequest, msg.clone())
+        ApiError::new(ResponseStatus::CLIENT_ERROR, msg.clone())
     }
     pub fn internal_error(msg: &String) -> ApiError {
-        ApiError::new(Status::BadRequest, msg.clone())
+        ApiError::new(ResponseStatus::CLIENT_ERROR, msg.clone())
     }
 }
 
@@ -102,7 +102,7 @@ impl From<String> for ApiError {
 pub fn handle_unprocessable_entity<'a>(req: &'a Request) -> Json<ApiResponse<ValidationErrors>> {
     let validation_message = req.local_cache(|| CachedValidationErrors(None)).0.clone();
     Json(ApiResponse {
-        status: Status::UnprocessableEntity,
+        status: ResponseStatus::CLIENT_ERROR,
         msg: Some("Unprocessable Entity".to_string()),
         data: validation_message,
     })
