@@ -46,14 +46,6 @@ impl ApiError {
         ApiError { status, msg }
     }
 
-    pub fn internal_server_error_with_msg(msg: &str) -> ApiError {
-        ApiError::new(ResponseStatus::SERVER_FAILURE, msg.to_string())
-    }
-
-    pub fn internal_server_error() -> ApiError {
-        ApiError::internal_server_error_with_msg("Internal Server Error")
-    }
-
     pub fn validation_error(msg: &String) -> ApiError {
         ApiError::new(ResponseStatus::CLIENT_ERROR, msg.clone())
     }
