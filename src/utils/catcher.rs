@@ -1,11 +1,10 @@
 use crate::utils::response::ErrorInfo;
 use rocket::serde::json::Json;
-use rocket::serde::{Deserialize, Serialize};
 use rocket::Request;
 use rocket_validation::CachedValidationErrors;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(crate = "rocket::serde")]
 pub struct ValidationError {
     pub param_name: String,
     pub errors: Vec<String>,

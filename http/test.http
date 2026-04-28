@@ -1,0 +1,4 @@
+### 测试接口
+GET http://{{host}}:{{port}}/api/test/hello
+Accept: application/json
+Authorization: Bearer {{auth_token}}

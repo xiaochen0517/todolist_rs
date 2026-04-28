@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rocket = { version = "0.5.1", features = ["serde_json", "json"] }
+chrono = "0.4.44"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
+serde = { version = "1.0.228", features = ["derive"] }
+rocket = { version = "0.5.1", features = ["json"] }
 rocket-validation = "0.2.0"
 validator = "0.16"

@@ -1,8 +1,7 @@
 use rocket::serde::json::Json;
-use rocket::serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(crate = "rocket::serde")]
 pub struct ErrorInfo<T> {
     pub code: i32,
     pub message: String,
@@ -49,6 +48,12 @@ pub enum ApiError<T> {
 
     #[response(status = 500, content_type = "json")]
     InternalError(Json<T>),
+}
+
+impl ApiError<ErrorInfo<()>> {
+    pub fn create_error_info(code: i32, message: &str) -> ApiError<ErrorInfo<()>> {
+        ApiError::BadRequest(Json(ErrorInfo::new(code, message)))
+    }
 }
 
 pub type ApiResult<T, E> = Result<Json<T>, ApiError<E>>;

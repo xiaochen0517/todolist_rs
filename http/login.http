@@ -8,6 +8,8 @@ Content-Type: application/json
   "password": "admin123"
 }
 
+> {% client.global.set("auth_token", response.body.token); %}
+
 ### 登录用户名错误
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json

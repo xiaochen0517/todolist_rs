@@ -1,5 +1,6 @@
 use crate::models::auth::{LoginRequest, LoginResponse};
-use crate::utils::response::{ApiError, ApiResult, ErrorInfo};
+use crate::service::auth_service::AuthService;
+use crate::utils::response::{ApiResult, ErrorInfo};
 use rocket::serde::json::Json;
 use rocket_validation::Validated;
 
@@ -9,21 +10,7 @@ pub fn login(
     login_request: Validated<Json<LoginRequest>>,
 ) -> ApiResult<LoginResponse, ErrorInfo<()>> {
     info!("login request: {:?}", login_request);
-    let token = generate_token(&login_request.into_deep_inner().username)
-        .map_err(|err| ApiError::BadRequest(Json(err)))?;
-    Ok(Json(LoginResponse { token }))
-}
-
-/// 生成 token（示例函数）/ Generate token (example function)
-fn generate_token(username: &str) -> Result<String, ErrorInfo<()>> {
-    if username.eq("masonlee") {
-        Ok(format!("token_{}", username))
-    } else {
-        Err(ErrorInfo::new(
-            ErrorInfo::USERNAME_OR_PASSWORD_ERROR_CODE,
-            format!("Username does not exist: {}", username).as_str(),
-        ))
-    }
+    AuthService::login(login_request.into_deep_inner())
 }
 
 #[cfg(test)]

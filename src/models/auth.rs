@@ -1,8 +1,7 @@
-use rocket::serde::{Deserialize, Serialize};
 use rocket_validation::Validate;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Validate)]
-#[serde(crate = "rocket::serde")]
 pub struct LoginRequest {
     #[validate(length(min = 1, max = 24, message = "用户名长度必须在 1-24 个字符之间"))]
     pub username: String,
@@ -11,7 +10,6 @@ pub struct LoginRequest {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(crate = "rocket::serde")]
 pub struct LoginResponse {
     pub token: String,
 }
