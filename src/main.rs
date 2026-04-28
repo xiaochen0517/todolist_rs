@@ -3,7 +3,7 @@ extern crate rocket;
 extern crate rocket_validation;
 
 use crate::controllers::auth_controller::login;
-use crate::utils::response::handle_unprocessable_entity;
+use crate::utils::catcher::handle_unprocessable_entity;
 
 mod controllers;
 mod models;

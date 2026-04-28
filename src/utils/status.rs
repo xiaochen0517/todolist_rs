@@ -1,67 +1,56 @@
-use rocket::serde::{Deserialize, Deserializer, Serialize, Serializer};
+use rocket::http::Status;
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct ResponseStatus {
-    code: u16,
+/// 业务错误类型定义 / Business error type
+#[derive(Debug, Clone)]
+pub enum BizError {
+    /// 验证失败 / Validation failed
+    ValidationError(String),
+    /// 未授权 / Unauthorized
+    Unauthorized(String),
+    /// 禁止访问 / Forbidden
+    Forbidden(String),
+    /// 资源不存在 / Not found
+    NotFound(String),
+    /// 业务逻辑错误 / Business logic error
+    BusinessLogicError(String),
+    /// 服务器内部错误 / Internal server error
+    InternalError(String),
 }
 
-impl Default for ResponseStatus {
-    fn default() -> Self {
-        ResponseStatus { code: 200 }
-    }
-}
-
-impl ResponseStatus {
-    pub const SUCCESS: ResponseStatus = ResponseStatus { code: 200 };
-    pub const CLIENT_ERROR: ResponseStatus = ResponseStatus { code: 401 };
-    pub const SERVER_FAILURE: ResponseStatus = ResponseStatus { code: 500 };
-
-    fn new(code: u16) -> Self {
-        ResponseStatus { code }
-    }
-}
-
-/// 重写序列化函数
-mod serde {
-    use super::*;
-    use rocket::serde::de::{Error, Unexpected, Visitor};
-    use std::fmt;
-
-    impl<'a> Serialize for ResponseStatus {
-        fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-            serializer.serialize_u16(self.code)
+impl BizError {
+    /// 获取 HTTP 状态码 / Get HTTP status code
+    pub fn http_status(&self) -> Status {
+        match self {
+            BizError::ValidationError(_) => Status::BadRequest,
+            BizError::Unauthorized(_) => Status::Unauthorized,
+            BizError::Forbidden(_) => Status::Forbidden,
+            BizError::NotFound(_) => Status::NotFound,
+            BizError::BusinessLogicError(_) => Status::BadRequest,
+            BizError::InternalError(_) => Status::InternalServerError,
         }
     }
 
-    struct DeVisitor;
-
-    impl<'de> Visitor<'de> for DeVisitor {
-        type Value = ResponseStatus;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-            write!(formatter, "HTTP status code integer in range [100, 600)")
-        }
-
-        fn visit_i64<E: Error>(self, v: i64) -> Result<Self::Value, E> {
-            if v < 100 || v >= 600 {
-                return Err(E::invalid_value(Unexpected::Signed(v), &self));
-            }
-
-            Ok(ResponseStatus::new(v as u16))
-        }
-
-        fn visit_u64<E: Error>(self, v: u64) -> Result<Self::Value, E> {
-            if v < 100 || v >= 600 {
-                return Err(E::invalid_value(Unexpected::Unsigned(v), &self));
-            }
-
-            Ok(ResponseStatus::new(v as u16))
+    /// 获取业务错误码 / Get business error code
+    pub fn code(&self) -> u16 {
+        match self {
+            BizError::ValidationError(_) => 4001,
+            BizError::Unauthorized(_) => 4011,
+            BizError::Forbidden(_) => 4031,
+            BizError::NotFound(_) => 4041,
+            BizError::BusinessLogicError(_) => 4002,
+            BizError::InternalError(_) => 5001,
         }
     }
 
-    impl<'de> Deserialize<'de> for ResponseStatus {
-        fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-            deserializer.deserialize_u16(DeVisitor)
+    /// 获取错误消息 / Get error message
+    pub fn message(&self) -> &str {
+        match self {
+            BizError::ValidationError(msg) => msg,
+            BizError::Unauthorized(msg) => msg,
+            BizError::Forbidden(msg) => msg,
+            BizError::NotFound(msg) => msg,
+            BizError::BusinessLogicError(msg) => msg,
+            BizError::InternalError(msg) => msg,
         }
     }
 }

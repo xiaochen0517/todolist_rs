@@ -1,4 +1,14 @@
-### 正常登录请求 / Valid login request
+### 正常登录请求
+POST http://{{host}}:{{port}}/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "masonlee",
+  "password": "admin123"
+}
+
+### 登录用户名错误
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json
 Content-Type: application/json
@@ -8,7 +18,7 @@ Content-Type: application/json
   "password": "admin123"
 }
 
-### 用户名太短 / Username too short
+### 用户名太短
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json
 Content-Type: application/json
@@ -18,7 +28,7 @@ Content-Type: application/json
   "password": "admin123"
 }
 
-### 密码太短 / Password too short
+### 密码太短
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json
 Content-Type: application/json
@@ -28,7 +38,7 @@ Content-Type: application/json
   "password": "1234567"
 }
 
-### 用户名太长 / Username too long
+### 用户名太长
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json
 Content-Type: application/json
@@ -38,7 +48,7 @@ Content-Type: application/json
   "password": "admin123"
 }
 
-### 密码太长 / Password too long
+### 密码太长
 POST http://{{host}}:{{port}}/api/auth/login
 Accept: application/json
 Content-Type: application/json

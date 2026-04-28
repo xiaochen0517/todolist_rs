@@ -1,101 +1,54 @@
-use crate::utils::status::ResponseStatus;
-use rocket::http::Status;
-use rocket::response::Responder;
-use rocket::serde::json::{Json, serde_json};
+use rocket::serde::json::Json;
 use rocket::serde::{Deserialize, Serialize};
-use rocket::{Request, Response};
-use rocket_validation::CachedValidationErrors;
-use std::io::Cursor;
-use validator::ValidationErrors;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(crate = "rocket::serde")]
-pub struct ApiResponse<T> {
-    pub status: ResponseStatus,
-    pub msg: Option<String>,
+pub struct ErrorInfo<T> {
+    pub code: i32,
+    pub message: String,
     pub data: Option<T>,
 }
 
-impl<T: Serialize> ApiResponse<T> {
-    pub fn new(data: T) -> ApiResponse<T> {
-        ApiResponse {
-            status: ResponseStatus::SUCCESS,
-            msg: None,
-            data: Some(data),
-        }
-    }
+impl ErrorInfo<()> {
+    pub(crate) const DEFAULT_ERROR_CODE: i32 = 1000;
 
-    pub fn error(status: ResponseStatus, msg: &str) -> Self {
-        ApiResponse {
-            status,
-            msg: Some(msg.to_string()),
+    /// 请求体 JSON 序列化检查错误
+    pub(crate) const REQUEST_BODY_PARAMS_ERROR_CODE: i32 = 4000;
+
+    /// 用户或密码错误
+    pub(crate) const USERNAME_OR_PASSWORD_ERROR_CODE: i32 = 4100;
+
+    /// TOKEN 生成失败
+    pub(crate) const GENERATE_TOKEN_ERROR_CODE: i32 = 5100;
+
+    pub fn new(code: i32, message: &str) -> ErrorInfo<()> {
+        ErrorInfo {
+            code,
+            message: message.to_string(),
             data: None,
         }
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(crate = "rocket::serde")]
-pub struct ApiError {
-    pub status: ResponseStatus,
-    pub msg: String,
-}
-
-impl ApiError {
-    pub fn new(status: ResponseStatus, msg: String) -> ApiError {
-        ApiError { status, msg }
-    }
-
-    pub fn validation_error(msg: &String) -> ApiError {
-        ApiError::new(ResponseStatus::CLIENT_ERROR, msg.clone())
-    }
-    pub fn internal_error(msg: &String) -> ApiError {
-        ApiError::new(ResponseStatus::CLIENT_ERROR, msg.clone())
+impl<T> ErrorInfo<T> {
+    pub fn new_with_data(code: i32, message: &str, data: T) -> ErrorInfo<T> {
+        ErrorInfo {
+            code,
+            message: message.to_string(),
+            data: Some(data),
+        }
     }
 }
 
-pub type ApiResult<T> = Result<Json<ApiResponse<T>>, Json<ApiError>>;
+#[derive(Responder)]
+pub enum ApiError<T> {
+    #[response(status = 400, content_type = "json")]
+    BadRequest(Json<T>),
+    #[response(status = 404, content_type = "json")]
+    NotFound(Json<T>),
 
-#[rocket::async_trait]
-impl<'r> Responder<'r, 'static> for ApiError {
-    fn respond_to(self, _: &'r Request<'_>) -> rocket::response::Result<'static> {
-        let response = ApiResponse::<()>::error(self.status, &self.msg);
-        let json = serde_json::to_string(&response).unwrap_or_else(|_| {
-            r#"{"status":500,"msg":"JSON serialization failed","data":null}"#.to_string()
-        });
-        Response::build()
-            .header(rocket::http::ContentType::JSON)
-            .status(Status::new(200))
-            .sized_body(Some(json.len()), Cursor::new(json))
-            .ok()
-    }
+    #[response(status = 500, content_type = "json")]
+    InternalError(Json<T>),
 }
 
-/// 常见的错误类型转换
-impl From<std::io::Error> for ApiError {
-    fn from(err: std::io::Error) -> Self {
-        ApiError::internal_error(&err.to_string())
-    }
-}
-
-impl From<serde_json::Error> for ApiError {
-    fn from(err: serde_json::Error) -> Self {
-        ApiError::validation_error(&err.to_string())
-    }
-}
-
-impl From<String> for ApiError {
-    fn from(err: String) -> Self {
-        ApiError::internal_error(&err)
-    }
-}
-
-#[catch(422)]
-pub fn handle_unprocessable_entity<'a>(req: &'a Request) -> Json<ApiResponse<ValidationErrors>> {
-    let validation_message = req.local_cache(|| CachedValidationErrors(None)).0.clone();
-    Json(ApiResponse {
-        status: ResponseStatus::CLIENT_ERROR,
-        msg: Some("Unprocessable Entity".to_string()),
-        data: validation_message,
-    })
-}
+pub type ApiResult<T, E> = Result<Json<T>, ApiError<E>>;
