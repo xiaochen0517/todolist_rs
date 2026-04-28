@@ -16,9 +16,9 @@ pub fn login(
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::rocket;
     use rocket::http::Status;
     use rocket::local::blocking::Client;
+    use crate::rocket;
 
     #[test]
     fn test_login_success() {

@@ -1,0 +1,2 @@
+[default.databases.db_name]
+url = "sqlite:todolist.db"

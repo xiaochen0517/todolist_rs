@@ -22,6 +22,9 @@ impl ErrorInfo<()> {
 
     /// TOKEN 生成失败
     pub(crate) const GENERATE_TOKEN_ERROR_CODE: i32 = 5100;
+    
+    /// 数据库查询失败
+    pub(crate) const DATABASE_ERROR_CODE: i32 = 6000;
 
     pub fn new(code: i32, message: &str) -> ErrorInfo<()> {
         ErrorInfo {
