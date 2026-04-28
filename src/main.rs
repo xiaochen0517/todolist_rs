@@ -4,7 +4,7 @@ extern crate rocket_validation;
 
 use crate::controllers::auth_controller::login;
 use crate::controllers::test_controller::test_hello;
-use crate::utils::catcher::handle_unprocessable_entity;
+use crate::utils::catcher::{handle_unauthorized, handle_unprocessable_entity};
 
 pub mod auth;
 mod controllers;
@@ -17,5 +17,8 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/api/auth", routes![login])
         .mount("/api/test", routes![test_hello])
-        .register("/", catchers![handle_unprocessable_entity,])
+        .register(
+            "/",
+            catchers![handle_unprocessable_entity, handle_unauthorized],
+        )
 }

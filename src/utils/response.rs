@@ -17,6 +17,9 @@ impl ErrorInfo<()> {
     /// 用户或密码错误
     pub(crate) const USERNAME_OR_PASSWORD_ERROR_CODE: i32 = 4100;
 
+    /// 登录状态验证失败
+    pub(crate) const AUTHORIZATION_ERROR_CODE: i32 = 4101;
+
     /// TOKEN 生成失败
     pub(crate) const GENERATE_TOKEN_ERROR_CODE: i32 = 5100;
 
@@ -39,10 +42,12 @@ impl<T> ErrorInfo<T> {
     }
 }
 
-#[derive(Responder)]
+#[derive(Responder, Debug, Clone)]
 pub enum ApiError<T> {
     #[response(status = 400, content_type = "json")]
     BadRequest(Json<T>),
+    #[response(status = 401, content_type = "json")]
+    Unauthorized(Json<T>),
     #[response(status = 404, content_type = "json")]
     NotFound(Json<T>),
 
@@ -53,6 +58,10 @@ pub enum ApiError<T> {
 impl ApiError<ErrorInfo<()>> {
     pub fn create_error_info(code: i32, message: &str) -> ApiError<ErrorInfo<()>> {
         ApiError::BadRequest(Json(ErrorInfo::new(code, message)))
+    }
+
+    pub fn create_unauthorized(code: i32, message: &str) -> ApiError<ErrorInfo<()>> {
+        ApiError::Unauthorized(Json(ErrorInfo::new(code, message)))
     }
 }
 
