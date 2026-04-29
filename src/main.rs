@@ -22,7 +22,15 @@ fn rocket() -> _ {
     // sea_orm Entity first mode
     rocket::build()
         .attach(AdHoc::try_on_ignite("Sea-ORM Database", |rocket| async {
-            match Database::connect("sqlite:todolist.db").await {
+            // 从 Rocket.toml 中读取 databases.db_name.url
+            let db_url = match rocket.figment().extract_inner::<String>("databases.db_name.url") {
+                Ok(url) => url,
+                Err(e) => {
+                    eprintln!("Failed to read database URL from config: {}", e);
+                    return Err(rocket);
+                }
+            };
+            match Database::connect(db_url).await {
                 Ok(conn) => Ok(rocket.manage(conn)),
                 Err(e) => {
                     eprintln!("Failed to connect to database: {}", e);

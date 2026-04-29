@@ -9,4 +9,5 @@ CREATE TABLE IF NOT EXISTS "user"
 );
 
 INSERT INTO "user" (username, email, password)
-VALUES ('admin', NULL, '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3Yc4l2S');
+-- Password is "todolist" hashed with bcrypt
+VALUES ('admin', NULL, '$argon2id$v=19$m=19456,t=2,p=1$mD4ecTLFSdVqJS5GZk/7kQ$TQtucK69KSoccUAclGMvLY+avgjuCXHTiAmRwnajk9U');

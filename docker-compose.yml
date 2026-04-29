@@ -3,6 +3,7 @@ version: '3.8'
 
 services:
   db:
+    container_name: todolist-db
     image: postgres:16
     environment:
       POSTGRES_USER: todolist

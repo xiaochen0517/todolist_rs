@@ -1,2 +1,2 @@
 [default.databases.db_name]
-url = "sqlite:todolist.db"
+url = "postgresql://todolist:todolist@localhost:5432/todolist"
