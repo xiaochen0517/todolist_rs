@@ -1,0 +1,4 @@
+### 正常登录请求
+GET http://{{host}}:{{port}}/api/todolist/info?page=1&page_size=10
+Accept: application/json
+Authorization: Bearer {{auth_token}}

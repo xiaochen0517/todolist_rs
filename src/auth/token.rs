@@ -5,7 +5,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 const SECRET: &[u8] = b"your-super-secret-key-change-this-in-production";
 
 /// 生成 JWT Token
-pub fn generate_token(user_id: String) -> Result<String, String> {
+pub fn generate_token(user_id: i32) -> Result<String, String> {
     let claims = Claims::new(user_id);
 
     encode(

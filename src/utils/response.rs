@@ -22,9 +22,12 @@ impl ErrorInfo<()> {
 
     /// TOKEN 生成失败
     pub(crate) const GENERATE_TOKEN_ERROR_CODE: i32 = 5100;
-    
+
     /// 数据库查询失败
     pub(crate) const DATABASE_ERROR_CODE: i32 = 6000;
+
+    /// 未发现用户
+    pub(crate) const USER_NOT_FOUND_ERROR_CODE: i32 = 6100;
 
     pub fn new(code: i32, message: &str) -> ErrorInfo<()> {
         ErrorInfo {
@@ -65,6 +68,10 @@ impl ApiError<ErrorInfo<()>> {
 
     pub fn create_unauthorized(code: i32, message: &str) -> ApiError<ErrorInfo<()>> {
         ApiError::Unauthorized(Json(ErrorInfo::new(code, message)))
+    }
+
+    pub fn create_internal_error(code: i32, message: &str) -> ApiError<ErrorInfo<()>> {
+        ApiError::InternalError(Json(ErrorInfo::new(code, message)))
     }
 }
 

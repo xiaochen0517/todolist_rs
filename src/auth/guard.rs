@@ -6,7 +6,7 @@ use rocket::request::{self, FromRequest, Request};
 
 /// 认证用户守卫 - 在路由处理函数中使用
 pub struct AuthUser {
-    pub user_id: String,
+    pub user_id: i32,
 }
 
 /// 用于在请求本地存储中存储认证错误信息

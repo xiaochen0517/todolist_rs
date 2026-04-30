@@ -51,7 +51,7 @@ impl AuthService {
             ));
         }
         // 生成 token
-        match generate_token(login_request.username.clone()) {
+        match generate_token(user_info.id) {
             Ok(token) => Ok(Json(LoginResponse { token })),
             Err(err) => Err(ApiError::create_error_info(
                 ErrorInfo::USERNAME_OR_PASSWORD_ERROR_CODE,

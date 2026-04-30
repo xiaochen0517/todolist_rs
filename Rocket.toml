@@ -1,2 +1,9 @@
 [default.databases.db_name]
 url = "postgresql://todolist:todolist@localhost:5432/todolist"
+
+[debug.databases.db_name]
+url = "postgresql://todolist:todolist@localhost:5432/todolist"
+
+[release.databases.db_name]
+url = "postgresql://todolist:todolist@localhost:5432/todolist"
+
