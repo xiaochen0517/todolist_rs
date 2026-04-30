@@ -1,13 +1,13 @@
 use crate::models::auth::{LoginRequest, LoginResponse};
 use crate::service::auth_service::AuthService;
 use crate::utils::response::{ApiResult, ErrorInfo};
-use rocket::State;
 use rocket::serde::json::Json;
+use rocket::State;
 use rocket_validation::Validated;
 use sea_orm::DatabaseConnection;
 
 /// 用户登录接口
-#[post("/login", format = "json", data = "<login_request>")]
+#[post("/login", format = "application/json", data = "<login_request>")]
 pub async fn login(
     db: &State<DatabaseConnection>,
     login_request: Validated<Json<LoginRequest>>,

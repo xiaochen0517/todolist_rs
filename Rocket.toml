@@ -1,3 +1,9 @@
+[default]
+address = "0.0.0.0"
+port = 8000
+log_level = "debug"
+cli_colors = false
+
 [default.databases.db_name]
 url = "postgresql://todolist:todolist@localhost:5432/todolist"
 

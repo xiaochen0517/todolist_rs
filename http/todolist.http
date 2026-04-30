@@ -1,4 +1,9 @@
-### 正常登录请求
+### 分页获取代办列表
 GET http://{{host}}:{{port}}/api/todolist/info?page=1&page_size=10
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### 分页获取代办列表 - 错误参数
+GET http://{{host}}:{{port}}/api/todolist/info?page=0&page_size=10
 Accept: application/json
 Authorization: Bearer {{auth_token}}

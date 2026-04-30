@@ -16,7 +16,11 @@ pub fn handle_unprocessable_entity<'a>(
 ) -> Option<Json<ErrorInfo<Vec<ValidationError>>>> {
     let validation_message = req.local_cache(|| CachedValidationErrors(None)).0.clone();
     match validation_message {
-        None => None,
+        None => Some(Json(ErrorInfo {
+            code: ErrorInfo::REQUEST_BODY_PARAMS_ERROR_CODE,
+            message: "请求参数验证失败，请检查输入的参数是否正确".to_string(),
+            data: None,
+        })),
         Some(data) => {
             let validation_errors: Vec<ValidationError> = data
                 .field_errors()

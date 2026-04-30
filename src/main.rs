@@ -8,6 +8,7 @@ use crate::controllers::auth_controller::login;
 use crate::controllers::test_controller::test_hello;
 use crate::controllers::todolist_controller::get_todolist;
 use crate::utils::catcher::{handle_unauthorized, handle_unprocessable_entity};
+use crate::utils::log::logging;
 use rocket::fairing::AdHoc;
 use sea_orm::Database;
 
@@ -20,6 +21,12 @@ pub(crate) mod utils;
 
 #[launch]
 fn rocket() -> _ {
+    // 判断环境
+    let is_production = std::env::var("ROCKET_ENV")
+        .map(|env| env == "production")
+        .unwrap_or(false);
+    // 初始化日志
+    logging::init_logging(is_production);
     // sea_orm Entity first mode
     rocket::build()
         .attach(AdHoc::try_on_ignite("Sea-ORM Database", |rocket| async {
@@ -50,6 +57,10 @@ fn rocket() -> _ {
         .mount("/api/test", routes![test_hello])
         .register(
             "/",
-            catchers![handle_unprocessable_entity, handle_unauthorized],
+            catchers![
+                rocket_validation::validation_catcher,
+                handle_unprocessable_entity,
+                handle_unauthorized
+            ],
         )
 }
