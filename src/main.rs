@@ -58,7 +58,7 @@ fn rocket() -> _ {
         .register(
             "/",
             catchers![
-                rocket_validation::validation_catcher,
+                // rocket_validation::validation_catcher,
                 handle_unprocessable_entity,
                 handle_unauthorized
             ],

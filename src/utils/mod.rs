@@ -1,4 +1,5 @@
 pub(crate) mod catcher;
+pub mod guards;
 pub mod log;
 pub(crate) mod password;
 pub(crate) mod response;
