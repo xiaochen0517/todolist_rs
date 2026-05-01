@@ -30,9 +30,7 @@ impl TodolistService {
         if current_page >= items_and_pages_number.number_of_pages {
             current_page = items_and_pages_number.number_of_pages - 1;
         }
-        let todolist_vec = user_info
-            .find_related(Todolist)
-            .paginate(db, todolist_page_request.page_size)
+        let todolist_vec = paginator
             .fetch_page(current_page)
             .await
             .map_err(handle_db_error)?;
